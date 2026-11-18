@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="fr" dir="ltr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Solution électrolytique et concentration — 1BAC — Prof. Mohammed Elamraouy</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@600;700;900&family=JetBrains+Mono:wght@600&display=swap" rel="stylesheet">
+<style>
+:root{--y:#FFD21F;--ink:#111;--b:#2F6FED;--r:#E5484D;--cr:#FFFBEE}
+*{box-sizing:border-box}body{margin:0;font-family:Cairo,sans-serif;color:var(--ink);background:radial-gradient(circle at 8% 0,rgba(255,210,31,.55),transparent 38%),radial-gradient(circle at 96% 12%,rgba(47,111,237,.22),transparent 36%),radial-gradient(circle at 50% 100%,rgba(255,210,31,.35),transparent 40%),var(--cr)}
+header{display:flex;align-items:center;gap:12px;padding:10px 18px;flex-wrap:wrap}
+.logo{width:46px;height:46px;border-radius:50%;background:var(--ink);color:var(--y);display:grid;place-items:center;font-weight:900}
+.brand-tag{font-weight:700;font-size:14px;line-height:1.3}.brand-tag b{background:var(--y);padding:0 6px;border-radius:5px}
+h1{margin:0 0 0 auto;font-size:20px;font-weight:900}mark{background:var(--y);padding:0 6px;border-radius:6px}
+.bar{display:flex;gap:8px;flex-wrap:wrap;padding:0 18px 8px;align-items:center}
+button,select{font:700 14px Cairo;border:2px solid var(--ink);background:#fff;border-radius:999px;padding:5px 14px;cursor:pointer;transition:.15s}
+button:hover{box-shadow:0 0 0 4px rgba(255,210,31,.7)}button.tab.on{background:var(--ink);color:var(--y)}.sep{width:2px;height:24px;background:var(--ink);opacity:.25}
+main{display:grid;grid-template-columns:1.4fr 1fr;gap:14px;padding:6px 18px 14px}@media(max-width:920px){main{grid-template-columns:1fr}}
+.pn{background:#fff;border:2px solid var(--ink);border-radius:16px;padding:12px;box-shadow:4px 4px 0 rgba(17,17,17,.9);margin-bottom:12px}.pn h3{margin:0 0 8px;font-size:15px}
+canvas{width:100%;border-radius:12px;background:#FFFDF2;border:2px solid var(--ink);display:block;touch-action:none}
+.scr{background:#111;border-radius:12px;padding:10px 14px;font-family:'JetBrains Mono',monospace;color:var(--y)}
+.scr div{display:flex;justify-content:space-between;gap:10px;padding:2px 0;border-bottom:1px dashed #444;font-size:14px}.scr div:last-child{border:0}.scr .a{color:#7CFFB2}.scr .b{color:#FF8A8F}.scr .c{color:#6FA2FF}
+.sl{display:grid;grid-template-columns:1fr auto;gap:2px 8px;margin:6px 0;font-size:14px;font-weight:700;align-items:center}.sl input[type=range]{grid-column:1/3;accent-color:var(--b)}.sl span{font-family:'JetBrains Mono';font-size:13px}
+.fm{border:2px dashed var(--ink);border-radius:12px;padding:8px 10px;margin-top:8px;font-family:'JetBrains Mono',monospace;font-size:13px;background:var(--cr);line-height:1.7}
+.info{font-size:14px;line-height:1.7;background:var(--y);border-radius:12px;padding:8px 12px;font-weight:600}
+footer{text-align:center;padding:10px;font-weight:700;font-size:13px}footer b{background:var(--ink);color:var(--y);padding:1px 8px;border-radius:6px}
+</style></head><body>
+<header><div class="logo">PC</div><div class="brand-tag"><b>Prof. Mohammed Elamraouy</b> · العمراوي للفيزياء<br>PC COLLEGE ET LYCEE</div><h1 id="ttl"></h1></header>
+<div class="bar"><button id="bl"></button><span class="sep"></span><span id="tabs"></span></div>
+<main><section><div class="pn"><h3 id="stt"></h3><canvas id="cv" width="680" height="420"></canvas></div></section>
+<section><div class="pn"><h3 data-i="ins"></h3><div class="scr" id="scr"></div></div>
+<div class="pn"><h3 data-i="par"></h3><div id="sls"></div><div class="fm" id="fm"></div></div>
+<div class="pn"><h3 data-i="con"></h3><div class="info" id="inf"></div></div></section></main>
+<footer>© <b>Prof. Mohammed Elamraouy</b> · العمراوي للفيزياء · YouTube : <b>PC COLLEGE ET LYCEE</b> · 0606382082</footer>
+<script>
+const $=s=>document.querySelector(s),cv=$('#cv'),c=cv.getContext('2d'),rm=matchMedia('(prefers-reduced-motion:reduce)').matches;
+let lang='fr',cur=0,t=0,V={},sd=7;const rnd=()=>(sd=sd*16807%2147483647)/2147483647;
+const U={fr:{ttl:'Solution électrolytique et concentration',ins:'Instrument de mesure',par:'Paramètres & formules',con:'Conclusion du cours'},ar:{ttl:'المحلول الإلكتروليتي والتركيز',ins:'جهاز القياس',par:'المعطيات والعلاقات',con:'خلاصة الدرس'}};
+const T=o=>Array.isArray(o)?o[lang=='fr'?0:1]:U[lang][o];
+const txt=(s,x,y,col='#111',al='center',f='700 14px Cairo')=>{c.fillStyle=col;c.textAlign=al;c.font=f;c.fillText(s,x,y)};
+const sph=(x,y,r,col,hi='#fff')=>{const g=c.createRadialGradient(x-r*.35,y-r*.35,r*.1,x,y,r);g.addColorStop(0,hi);g.addColorStop(.35,col);g.addColorStop(1,'#0006');c.fillStyle=g;c.beginPath();c.arc(x,y,r,0,7);c.fill()};
+const NA='#B04BD6',CL='#2FBF6A',cl=(a,b,v)=>Math.max(a,Math.min(b,v));
+// ---------- 1: ionic crystal 3D
+let ry=.6,rx=-.35,drag=0;
+cv.onpointerdown=e=>{drag=[e.clientX,e.clientY];cv.setPointerCapture(e.pointerId)};cv.onpointermove=e=>{if(drag){ry+=(e.clientX-drag[0])*.01;rx+=(e.clientY-drag[1])*.01;drag=[e.clientX,e.clientY]}};cv.onpointerup=()=>drag=0;
+const pts=[];for(let i=0;i<3;i++)for(let j=0;j<3;j++)for(let k=0;k<3;k++)pts.push({x:i-1,y:j-1,z:k-1,na:(i+j+k)%2==1});
+function proj(x,y,z){const a=x*Math.cos(ry)+z*Math.sin(ry),b=-x*Math.sin(ry)+z*Math.cos(ry),c2=y*Math.cos(rx)-b*Math.sin(rx),d=y*Math.sin(rx)+b*Math.cos(rx),f=700/(700+d*85);return{X:340+a*85*f,Y:215+c2*85*f,d,f}}
+function draw1(p){if(+p.auto&&!drag&&!rm)ry+=.007;const E=+p.exp,P=pts.map(q=>({q,...proj(q.x*(E?1.25:1),q.y*(E?1.25:1),q.z*(E?1.25:1))}));
+ c.strokeStyle='#999';c.lineWidth=1;const cs=[-1,1],V8=[];cs.forEach(x=>cs.forEach(y=>cs.forEach(z=>V8.push(proj(x*(E?1.25:1),y*(E?1.25:1),z*(E?1.25:1))))));
+ for(let a=0;a<8;a++)for(let b=a+1;b<8;b++)if([4,2,1].includes(b-a)&&!(b-a==1&&a%2)&&!(b-a==2&&(a>>1)%2)){c.beginPath();c.moveTo(V8[a].X,V8[a].Y);c.lineTo(V8[b].X,V8[b].Y);c.stroke()}
+ if(+p.bond){c.strokeStyle='#E5484D';c.lineWidth=2;c.setLineDash([5,4]);P.forEach((u,i)=>P.forEach((w,j)=>{if(j>i&&Math.abs(u.q.x-w.q.x)+Math.abs(u.q.y-w.q.y)+Math.abs(u.q.z-w.q.z)==1&&(u.q.na?+p.na:+p.cl)&&(w.q.na?+p.na:+p.cl)){c.beginPath();c.moveTo(u.X,u.Y);c.lineTo(w.X,w.Y);c.stroke()}}));c.setLineDash([]);c.lineWidth=1}
+ P.sort((a,b)=>b.d-a.d).forEach(u=>{if(u.q.na?!+p.na:!+p.cl)return;const r=(u.q.na?.344:.656)*85*u.f*(E?.4:1);sph(u.X,u.Y,r,u.q.na?NA:CL)});
+ txt(T(['Glisser pour tourner le cristal','اسحب لتدوير البلورة']),340,408,'#555');sph(40,30,10,NA);txt('Na⁺',60,35,'#111','left');sph(120,30,16,CL);txt('Cl⁻',142,35,'#111','left')}
+const S=[
+{n:['1 · Le corps solide ionique (NaCl en 3D)','١ · الجسم الصلب الأيوني (NaCl ثلاثي الأبعاد)'],
+ par:[{k:'exp',chk:1,v:0,lab:['Modèle éclaté','النموذج المفكك']},{k:'na',chk:1,v:1,lab:['Afficher Na⁺','إظهار Na⁺']},{k:'cl',chk:1,v:1,lab:['Afficher Cl⁻','إظهار Cl⁻']},{k:'bond',chk:1,v:0,lab:['Interactions électrostatiques','التفاعلات الكهرساكنة']},{k:'auto',chk:1,v:1,lab:['Rotation automatique','دوران تلقائي']}],
+ res:()=>[['Na⁺ (maille)','12×¼ + 1 = 4','b'],['Cl⁻ (maille)','8×⅛ + 6×½ = 4','a'],['Σ charges','4(+e) + 4(−e) = 0','c']],
+ fm:()=>'Na⁺ : milieux des arêtes + centre<br>Cl⁻ : sommets + centres des faces<br>n(cations) = n(anions) ⇒ neutre',
+ info:['Un solide ionique est formé de cations et d’anions régulièrement disposés ; il est électriquement neutre. Chaque cation est entouré d’anions (et inversement) ; la cohésion est assurée par des interactions électrostatiques. Formule : XbYa pour Xa⁺ et Yb⁻.','الجسم الصلب الأيوني بلورة من كاتيونات وأنيونات موزعة بانتظام، وهو معتدل كهربائياً. كل كاتيون محاط بأنيونات والعكس، وتماسكه ناتج عن تأثيرات كهرساكنة.'],draw:draw1},
+// ---------- 2: polarity
+{n:['2 · Électronégativité et polarité','٢ · الكهرسلبية والقطبية'],
+ par:[{k:'mol',sel:['O₂','H₂','N₂','HCl','NaCl','H₂O','CO₂','CH₄'],v:'HCl',lab:['Molécule','الجزيئة']}],
+ res:p=>{const m=MOL[p.mol],q=chg(m),G=bary(m,q);return[['Δχ',m.b.map(b=>Math.abs(EN[m.a[b[0]][0]]-EN[m.a[b[1]][0]]).toFixed(2)).join(' ; '),'c'],['δ',q.map((x,i)=>m.a[i][0]+':'+x.toFixed(2)).join(' '),'b'],[T(['Verdict','الحكم']),G.polar?T(['POLAIRE','قطبية']):T(['APOLAIRE','غير قطبية']),'a']]},
+ fm:()=>'χ(H)=2,20  χ(C)=2,55  χ(N)=3,04<br>χ(Cl)=3,16  χ(O)=3,44  χ(Na)=0,93<br>G⁺ ≠ G⁻ ⇒ molécule polaire',
+ info:['L’électronégativité mesure l’aptitude d’un atome à attirer le doublet de la liaison. Une molécule est polaire si le barycentre des charges positives (G⁺) ne coïncide pas avec celui des charges négatives (G⁻). Pour 3 atomes ou plus, la géométrie compte (H₂O polaire, CO₂ apolaire).','الكهرسلبية قدرة الذرة على جذب الزوج الإلكتروني الرابط. الجزيئة قطبية إذا لم ينطبق مركز الشحنات الموجبة G⁺ على مركز الشحنات السالبة G⁻، ولعدد الذرات ≥ 3 يؤثر الشكل الهندسي (H₂O قطبية و CO₂ غير قطبية).'],draw:draw2},
+// ---------- 3: dissolution
+{n:['3 · Dissolution de NaCl dans l’eau','٣ · ذوبان NaCl في الماء'],
+ par:[{k:'p',min:0,max:1,st:.01,v:0,u:'',lab:['Progression','التقدم']},{k:'auto',chk:1,v:1,lab:['Lecture automatique','تشغيل تلقائي']}],
+ res:p=>[[T(['Étape','المرحلة']),stg(p.p)[0],'a'],[T(['Ions libérés','الأيونات المتحررة']),ions.filter(i=>p.p>i.r).length+' / '+ions.length,'b']],
+ fm:()=>'NaCl(s) <sup></sup>→ Na⁺(aq) + Cl⁻(aq)<br>(eau)',
+ info:['Trois étapes : dissociation (les pôles de l’eau attirent les ions du cristal), solvatation (chaque ion s’entoure de molécules d’eau), dispersion (les ions solvatés se répartissent : mélange homogène).','ثلاث مراحل : التفكك (أقطاب الماء تجذب أيونات البلورة)، الإماهة (يحيط كل أيون بجزيئات الماء)، التبعثر (توزّع الأيونات المماهة في المحلول بشكل متجانس).'],draw:draw3},
+// ---------- 4: concentration
+{n:['4 · Concentrations molaires','٤ · التراكيز المولية'],
+ par:[{k:'s',sel:Object.keys(SALT_KEYS()),v:'FeCl₃',lab:['Soluté XaYb','المذاب XaYb']},{k:'n',min:.01,max:1,st:.01,v:.1,u:'mol',lab:['Quantité n','كمية المادة n']},{k:'V',min:.2,max:2,st:.05,v:.5,u:'L',lab:['Volume V','الحجم V']}],
+ res:p=>{const s=SALT[p.s],C=p.n/p.V;return[['C',C.toFixed(3)+' mol/L','a'],['['+s.X+']',(s.a*C).toFixed(3)+' mol/L','b'],['['+s.Y+']',(s.b*C).toFixed(3)+' mol/L','c']]},
+ fm:p=>{const s=SALT[p.s],C=p.n/p.V;return`${p.s}(s) → ${s.a>1?s.a:''}${s.X}(aq) + ${s.b>1?s.b:''}${s.Y}(aq)<br>C = n/V = ${p.n}/${p.V} = ${C.toFixed(3)}<br>C = [X]/a = [Y]/b<br>[${s.X}]=${s.a}×C ; [${s.Y}]=${s.b}×C`},
+ info:['C = n/V (mol·L⁻¹). Pour XaYb → a Xb⁺ + b Ya⁻ : C = [Xb⁺]/a = [Ya⁻]/b. La concentration effective d’un ion n’est donc pas toujours égale à C.','C = n/V (mol·L⁻¹). بالنسبة للمعادلة XaYb → a Xb⁺ + b Ya⁻ : C = [Xb⁺]/a = [Ya⁻]/b. إذن التركيز الفعلي للأيون لا يساوي دائماً C.'],draw:draw4}];
+// polarity data
+const EN={H:2.2,C:2.55,N:3.04,O:3.44,Cl:3.16,Na:.93},COL={H:'#eee',C:'#555',N:'#4A6FE5',O:'#E5484D',Cl:'#2FBF6A',Na:NA},RAD={H:16,C:22,N:22,O:24,Cl:28,Na:30};
+const MOL={'O₂':{a:[['O',-48,0],['O',48,0]],b:[[0,1,2]]},'H₂':{a:[['H',-40,0],['H',40,0]],b:[[0,1,1]]},'N₂':{a:[['N',-48,0],['N',48,0]],b:[[0,1,3]]},'HCl':{a:[['H',-55,0],['Cl',45,0]],b:[[0,1,1]]},'NaCl':{a:[['Na',-60,0],['Cl',45,0]],b:[[0,1,1]]},'H₂O':{a:[['O',0,-25],['H',-72,35],['H',72,35]],b:[[0,1,1],[0,2,1]]},'CO₂':{a:[['O',-110,0],['C',0,0],['O',110,0]],b:[[0,1,2],[1,2,2]]},'CH₄':{a:[['C',0,0],['H',-70,-55],['H',70,-55],['H',-70,55],['H',70,55]],b:[[0,1,1],[0,2,1],[0,3,1],[0,4,1]]}};
+const chg=m=>{const q=m.a.map(()=>0);m.b.forEach(([i,j])=>{const d=EN[m.a[j][0]]-EN[m.a[i][0]];q[i]-=d;q[j]+=d});return q};
+const bary=(m,q)=>{const g=s=>{let w=0,x=0,y=0;q.forEach((v,i)=>{if(v*s>.01){w+=v*s;x+=v*s*m.a[i][1];y+=v*s*m.a[i][2]}});return w?[x/w,y/w]:[0,0]};const P=g(1),N=g(-1);return{P,N,polar:Math.hypot(P[0]-N[0],P[1]-N[1])>2}};
+function draw2(p){const m=MOL[p.mol],q=chg(m),G=bary(m,q),ox=340,oy=210;
+ m.b.forEach(([i,j,n])=>{const A=m.a[i],B=m.a[j];c.strokeStyle='#666';c.lineWidth=4;for(let k=0;k<n;k++){const o=(k-(n-1)/2)*9,dx=B[1]-A[1],dy=B[2]-A[2],L=Math.hypot(dx,dy);c.beginPath();c.moveTo(ox+A[1]-dy/L*o,oy+A[2]+dx/L*o);c.lineTo(ox+B[1]-dy/L*o,oy+B[2]+dx/L*o);c.stroke()}
+  const d=EN[B[0]]-EN[A[0]],tt=.5+cl(-.35,.35,d*.17),mx=A[1]+(B[1]-A[1])*tt,my=A[2]+(B[2]-A[2])*tt;c.fillStyle='rgba(47,111,237,.35)';c.beginPath();c.ellipse(ox+mx,oy+my,17,9,Math.atan2(B[2]-A[2],B[1]-A[1]),0,7);c.fill()});
+ m.a.forEach((a,i)=>{sph(ox+a[1],oy+a[2],RAD[a[0]]*1.15,COL[a[0]]);txt(a[0],ox+a[1],oy+a[2]+5,a[0]=='H'?'#333':'#fff','center','900 15px Cairo');if(Math.abs(q[i])>.05)txt((q[i]>0?'δ+':'δ−')+(Math.abs(q[i])>1.5?' (fort)':''),ox+a[1],oy+a[2]-RAD[a[0]]*1.15-8,q[i]>0?'#E5484D':'#2F6FED','center','900 15px Cairo')});
+ const mk=(P,s,col)=>{c.strokeStyle=col;c.lineWidth=3;c.beginPath();c.arc(ox+P[0],oy+P[1]+(s=='+'?0:0),9,0,7);c.stroke();txt('G'+s,ox+P[0],oy+P[1]+ (s=='+'?-16:30),col,'center','900 13px Cairo')};
+ if(q.some(v=>v>.01)){mk(G.P,'⁺','#E5484D');mk(G.N,'⁻','#2F6FED')}
+ txt(G.polar?T(['Molécule polaire : G⁺ ≠ G⁻','جزيئة قطبية : G⁺ ≠ G⁻']):T(['Molécule apolaire : G⁺ = G⁻','جزيئة غير قطبية : G⁺ = G⁻']),340,395,G.polar?'#E5484D':'#2E9E5B','center','900 17px Cairo')}
+// dissolution data
+const ions=[];for(let r=0;r<4;r++)for(let k=0;k<6;k++)ions.push({bx:90+k*27,by:300+r*27,na:(r+k)%2==0,r:.04+.36*(3-r)/3+rnd()*.06,tx:150+rnd()*470,ty:90+rnd()*270,ph:rnd()*6,ring:rnd()*6});
+const wat=[];for(let i=0;i<ions.length*3+30;i++)wat.push({x:60+rnd()*560,y:90+rnd()*280,ph:rnd()*6});
+const stg=p=>p<.33?[T(['1. Dissociation','١. التفكك'])]:p<.66?[T(['2. Solvatation','٢. الإماهة'])]:[T(['3. Dispersion','٣. التبعثر'])];
+function water(x,y,ang){c.save();c.translate(x,y);c.rotate(ang);c.fillStyle='#fff';c.strokeStyle='#999';[[-6,6],[6,6]].forEach(h=>{c.beginPath();c.arc(h[0],h[1],3.5,0,7);c.fill();c.stroke()});sph(0,0,5.5,'#E5484D');c.restore()}
+function draw3(p){const P=+p.p;c.fillStyle='rgba(120,190,255,.28)';c.fillRect(40,70,600,320);c.strokeStyle='#111';c.lineWidth=3;c.strokeRect(40,70,600,320);c.lineWidth=1;
+ const pos=ions.map(i=>{const e=cl(0,1,(P-i.r)/.55),s=e*e*(3-2*e),x=i.bx+(i.tx-i.bx)*s+Math.sin(t*1.3+i.ph)*3*e,y=i.by+(i.ty-i.by)*s+Math.cos(t*1.1+i.ph)*3*e;return{x,y,a:cl(0,1,(P-i.r+.12)/.2)}});
+ wat.forEach((w,k)=>{const ii=Math.floor(k/3),fx=w.x+Math.sin(t+w.ph)*6,fy=w.y+Math.cos(t*.9+w.ph)*6;let x=fx,y=fy,ang=t*.5+w.ph;if(ii<ions.length){const o=pos[ii],i=ions[ii],a=o.a,an=i.ring+(k%3)*2.1+t*.5,rx2=o.x+Math.cos(an)*21,ry2=o.y+Math.sin(an)*21;x=fx+(rx2-fx)*a;y=fy+(ry2-fy)*a;ang=an+(i.na?Math.PI/2:-Math.PI/2)*1+(i.na?0:Math.PI)+ (i.na?Math.PI:0)-Math.PI/2*(i.na?0:0)}water(x,y,ang)});
+ ions.forEach((i,k)=>{sph(pos[k].x,pos[k].y,i.na?9:13,i.na?NA:CL)});
+ txt(stg(P)[0],340,50,'#111','center','900 18px Cairo');sph(70,30,8,NA);txt('Na⁺',84,35,'#111','left');sph(130,30,11,CL);txt('Cl⁻',146,35,'#111','left');water(210,30,0);txt('H₂O',224,35,'#111','left');
+ if(+V.auto&&!rm){V.p=P+.0035;if(V.p>1.08)V.p=0;const e=$('[data-k=p]');if(e)e.value=V.p;const l=$('#v_p');if(l)l.textContent=Math.min(1,V.p).toFixed(2)}}
+// concentration
+const SALT={'NaCl':{X:'Na⁺',Y:'Cl⁻',a:1,b:1},'CaCl₂':{X:'Ca²⁺',Y:'Cl⁻',a:1,b:2},'FeCl₃':{X:'Fe³⁺',Y:'Cl⁻',a:1,b:3},'Na₂SO₄':{X:'Na⁺',Y:'SO₄²⁻',a:2,b:1},'Al₂(SO₄)₃':{X:'Al³⁺',Y:'SO₄²⁻',a:2,b:3}};
+function SALT_KEYS(){return {'NaCl':1,'CaCl₂':1,'FeCl₃':1,'Na₂SO₄':1,'Al₂(SO₄)₃':1}}
+const pool=[];for(let i=0;i<360;i++)pool.push([rnd(),rnd(),rnd()*6]);
+function draw4(p){const s=SALT[p.s],h=p.V/2*290,x0=170,w=340,yb=360;c.fillStyle='rgba(120,190,255,.3)';c.fillRect(x0,yb-h,w,h);c.strokeStyle='#111';c.lineWidth=3;c.beginPath();c.moveTo(x0,60);c.lineTo(x0,yb);c.lineTo(x0+w,yb);c.lineTo(x0+w,60);c.stroke();c.lineWidth=1;
+ for(let v=.5;v<=2;v+=.5){const y=yb-v/2*290;c.beginPath();c.moveTo(x0,y);c.lineTo(x0+14,y);c.stroke();txt(v+' L',x0-8,y+4,'#555','right','700 12px Cairo')}
+ const nX=Math.round(s.a*p.n*50),nY=Math.round(s.b*p.n*50);
+ pool.slice(0,nX).forEach(q=>sph(x0+12+q[0]*(w-24)+Math.sin(t+q[2])*4,yb-8-q[1]*(h-16)+Math.cos(t*.8+q[2])*4,6,NA));
+ pool.slice(180,180+nY).forEach(q=>sph(x0+12+q[0]*(w-24)+Math.sin(t*.9+q[2])*4,yb-8-q[1]*(h-16)+Math.cos(t+q[2])*4,8,CL));
+ sph(560,100,7,NA);txt(s.X+' (×'+s.a+')',575,105,'#111','left');sph(560,130,9,CL);txt(s.Y+' (×'+s.b+')',575,135,'#111','left');txt('C = '+(p.n/p.V).toFixed(3)+' mol/L',340,40,'#111','center','900 18px Cairo')}
+// ---------- UI
+function build(){const s=S[cur];$('#stt').textContent=T(s.n);$('#inf').textContent=T(s.info);
+ $('#sls').innerHTML=s.par.map(q=>q.chk?`<div class="sl"><label><input type="checkbox" data-k="${q.k}" ${V[q.k]?'checked':''}> ${T(q.lab)}</label></div>`:q.sel?`<div class="sl"><label>${T(q.lab)}</label><select data-k="${q.k}">${q.sel.map(o=>`<option ${o==V[q.k]?'selected':''}>${o}</option>`).join('')}</select></div>`:`<div class="sl"><label>${T(q.lab)}</label><span id="v_${q.k}">${V[q.k]} ${q.u}</span><input type="range" min="${q.min}" max="${q.max}" step="${q.st}" value="${V[q.k]}" data-k="${q.k}"></div>`).join('');
+ document.querySelectorAll('#sls [data-k]').forEach(i=>i.oninput=()=>{const q=s.par.find(z=>z.k==i.dataset.k);V[q.k]=q.chk?+i.checked:q.sel?i.value:+i.value;const l=$('#v_'+q.k);if(l)l.textContent=V[q.k]+' '+q.u});
+ $('#tabs').innerHTML=S.map((_,i)=>`<button class="tab ${i==cur?'on':''}" onclick="pick(${i})">${i+1}</button>`).join(' ')}
+function pick(i){cur=i;V={};S[i].par.forEach(q=>V[q.k]=q.v);build()}
+function setLang(l){lang=l;document.documentElement.lang=l;document.documentElement.dir=l=='ar'?'rtl':'ltr';$('#ttl').innerHTML='<mark>'+T('ttl')+'</mark>';$('#bl').textContent=l=='fr'?'العربية':'Français';document.querySelectorAll('[data-i]').forEach(e=>e.textContent=T(e.dataset.i));build()}
+$('#bl').onclick=()=>setLang(lang=='fr'?'ar':'fr');
+let last=0;(function loop(ts){const dt=Math.min((ts-last)/1000,.05);last=ts;if(!rm)t+=dt;const s=S[cur];c.clearRect(0,0,680,420);s.draw(V,t);
+ $('#scr').innerHTML=s.res(V).map(([a,b,k])=>`<div class="${k}"><span>${a}</span><span>${b}</span></div>`).join('');$('#fm').innerHTML=s.fm(V);requestAnimationFrame(loop)})(0);
+setLang('fr');pick(0);
+</script></body></html>
